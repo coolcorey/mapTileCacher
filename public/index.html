@@ -1,0 +1,50 @@
+<script src="bower_components/leaflet/dist/leaflet.js"></script>
+<link href="bower_components/leaflet/dist/leaflet.css" rel="stylesheet" />
+
+<style>
+  #mapid {
+    height: 100%;
+  }
+</style>
+
+<div id="mapid"></div>
+
+
+<script>
+  /***** Set These Variables ****/
+  var tileSrc = 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'; //tiles url
+  var folderToStore = 'DarkMaps'; //server side folder where this tile set will be stored
+  var trimBefore = 'dark_all'; //the location in the tile url where the actual tile folder structure starts
+
+
+  var options = {
+    zoomControl: false,
+    scrollWheelZoom: false,
+    center: [43, 0],
+    zoomControl: true,
+    zoom: 3,
+  };
+
+  var map = L.map('mapid', options);
+
+  var tileLayer = L.tileLayer(tileSrc, {noWrap: true}).addTo(map);
+
+  tileLayer.on('tileload', function(e) {
+
+    var request = new XMLHttpRequest();
+    request.onreadystatechange = function() {
+        if (request.readyState === 4) {
+            if (request.status === 200) {
+                console.log(request.responseText);
+            } else {
+              console.error('Error in request');
+            }
+        }
+    };
+    request.open("GET", '/saveThis?url=' + e.url + '&folder=' + folderToStore + '&trimbefore=' + trimBefore, true);
+    request.send(null);
+
+    //console.log(folderToStore, e.url);
+  });
+
+</script>

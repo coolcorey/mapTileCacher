@@ -57,7 +57,12 @@ tileSaverServer.get('/saveThis', function(req, res) {
   var url = req.query.url;
   var folder = req.query.folder;
   var trimBefore = req.query.trimbefore;
-  var saveTo = folder + url.split(trimBefore)[1];
+  var fields = url.split(trimBefore);
+  var last_index = fields.length - 1;
+  var saveTo = folder + fields[last_index];
+  //var saveTo = folder + url.split(trimBefore)[1];
+
+
 
   if (!url || !folder) {
     res.send('err');

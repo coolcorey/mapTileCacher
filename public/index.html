@@ -12,10 +12,13 @@
 
 <script>
   /***** Set These Variables ****/
-  var tileSrc = 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'; //tiles url
-  var folderToStore = 'DarkMaps'; //server side folder where this tile set will be stored
-  var trimBefore = 'dark_all'; //the location in the tile url where the actual tile folder structure starts
+  //var tileSrc = 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'; //tiles url
+  //var folderToStore = 'DarkMaps'; //server side folder where this tile set will be stored
+  //var trimBefore = 'dark_all'; //the location in the tile url where the actual tile folder structure starts
 
+  var tileSrc = 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png';
+  var folderToStore = 'OpenStreet';
+  var trimBefore = 'cycle';
 
   var options = {
     zoomControl: false,

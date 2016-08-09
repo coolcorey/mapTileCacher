@@ -9,8 +9,18 @@
 
 <div id="mapid"></div>
 
-
+<div style="position:absolute; top: 15px; right: 15px;">
+  <small>Center: </small>
+  <small id="latlonValue"></small>
+  <br>
+  <small>Bounds: </small>
+  <small id="boundsValue"></small>
+  <br>
+  <small>Zoom: </small>
+  <small id="zoomValue"></small>
+</div>
 <script>
+
   /***** Set These Variables ****/
   //var tileSrc = 'http://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'; //tiles url
   //var folderToStore = 'DarkMaps'; //server side folder where this tile set will be stored
@@ -19,6 +29,14 @@
   var tileSrc = 'http://{s}.tile.opencyclemap.org/cycle/{z}/{x}/{y}.png';
   var folderToStore = 'OpenStreet';
   var trimBefore = 'cycle';
+  var minZoom = 3;
+  var maxZoom = 4;
+
+  var camera = {
+    lat: 90 ,
+    lon: -180,
+    zoom: minZoom
+  };
 
   var options = {
     zoomControl: false,
@@ -49,5 +67,57 @@
 
     //console.log(folderToStore, e.url);
   });
+
+  var response = confirm('Automatically scan this map?');
+
+  if(response){
+
+    var minZoomInput = prompt("Minimum/Starting Zoom Level", "3");
+    if (minZoomInput != null) {
+      minZoom = parseInt(minZoomInput);
+    }
+
+    var maxZoomInput = prompt("Maximum/Ending Zoom Level", minZoom.toString());
+    if (maxZoomInput != null) {
+      maxZoom = parseInt(maxZoomInput);
+    }
+
+    map.setZoom(camera.zoom);
+    map.panTo(new L.LatLng(camera.lat, camera.lon));
+
+    var autoScanner = setInterval(function(){
+      // lat from 90 to -90
+      // lon from 0 to 360
+      var currentBounds = map.getBounds();
+      var latDelta = currentBounds._northEast.lat - currentBounds._southWest.lat;
+      var lonDelta = currentBounds._northEast.lng - currentBounds._southWest.lng;
+
+      camera.lon = camera.lon > 180 ? -180 : (camera.lon + Math.abs(lonDelta/2))
+      if(camera.lon == -180){
+        if(camera.lat <= -90){
+          camera.lat = 90;
+          if(camera.zoom >= maxZoom){
+            clearInterval(autoScanner);
+            alert('Done with zoom range ' + minZoom + ' to ' + maxZoom);
+            map.setZoom(minZoom);
+            map.panTo(new L.LatLng(0, 0));
+            return;
+          }
+          camera.zoom++;
+        }else{
+          camera.lat = camera.lat - Math.abs(latDelta/2);
+        }
+      }
+
+      // Upadte the values in the upper right
+      document.getElementById("latlonValue").innerHTML = '[' + camera.lat.toFixed(2) + '&#176;' + ', ' + camera.lon.toFixed(2) + '&#176;' + ']';
+      document.getElementById("zoomValue").innerHTML = camera.zoom;
+      document.getElementById("boundsValue").innerHTML = '[' + latDelta.toFixed(2) + '&#176;' + ', ' + lonDelta.toFixed(2) + '&#176;' + ']';
+
+      map.setZoom(camera.zoom);
+      map.panTo(new L.LatLng(camera.lat, camera.lon));
+
+    }, 800)
+  }
 
 </script>

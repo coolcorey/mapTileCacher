@@ -44,8 +44,13 @@ var saveTile = function(url, saveTo, cb) {
       file.close(cb); // close() is async, call cb after close completes.
     });
   }).on('error', function(err) { // Handle errors
-    fs.unlink(saveTo); // Delete the file async. (But we don't check the result)
-    if (cb) cb(err.message);
+    try{
+      fs.unlink(saveTo); // Delete the file async. (But we don't check the result)
+      if (cb) cb(err.message);
+    }catch(e){
+        console.log(e);
+    }
+
   });
 
   return true;
@@ -61,8 +66,6 @@ tileSaverServer.get('/saveThis', function(req, res) {
   var last_index = fields.length - 1;
   var saveTo = folder + fields[last_index];
   //var saveTo = folder + url.split(trimBefore)[1];
-
-
 
   if (!url || !folder) {
     res.send('err');
